@@ -1,11 +1,12 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
-import { Plus, Pencil, Trash2, Search, Eye, ScanLine } from 'lucide-react'
+import { BrowserMultiFormatReader } from '@zxing/browser'
+import { Plus, Pencil, Trash2, Search, Eye, ScanLine, Camera, CameraOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -61,6 +62,9 @@ function ProductDialog({
   const create = useCreateProduct()
   const update = useUpdateProduct(product?.id ?? '')
   const isPending = create.isPending || update.isPending
+  const [cameraActive, setCameraActive] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const controlsRef = useRef<{ stop: () => void } | null>(null)
 
   const schema = useMemo(
     () =>
@@ -74,7 +78,7 @@ function ProductDialog({
     [t],
   )
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<Form>({
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<Form>({
     resolver: zodResolver(schema),
   })
 
@@ -83,19 +87,43 @@ function ProductDialog({
       reset(
         product
           ? {
-              pos_product_id: product.pos_product_id,
-              name: product.name,
-              sku: product.sku,
-              barcode: product.barcode,
-              is_active: product.is_active,
-            }
+            pos_product_id: product.pos_product_id,
+            name: product.name,
+            sku: product.sku,
+            barcode: product.barcode,
+            is_active: product.is_active,
+          }
           : { pos_product_id: '', name: '', sku: '', barcode: '', is_active: true },
       )
+    } else {
+      setCameraActive(false)
     }
   }, [open, product, reset])
 
+  const stopCamera = useCallback(() => {
+    controlsRef.current?.stop()
+    controlsRef.current = null
+  }, [])
+
+  useEffect(() => {
+    if (!cameraActive || !videoRef.current) return
+    const reader = new BrowserMultiFormatReader()
+    reader
+      .decodeFromVideoDevice(undefined, videoRef.current, (result) => {
+        if (result) {
+          setValue('barcode', result.getText(), { shouldValidate: true })
+          setCameraActive(false)
+        }
+      })
+      .then((controls) => {
+        controlsRef.current = controls
+      })
+      .catch(() => setCameraActive(false))
+    return () => stopCamera()
+  }, [cameraActive, setValue, stopCamera])
+
   const onSubmit = async (values: Form) => {
-    const body: ProductBody = { pos_product_id: values.pos_product_id, name: values.name, ...values }
+    const body: ProductBody = { ...values }
     try {
       if (product) {
         await update.mutateAsync(body)
@@ -136,9 +164,26 @@ function ProductDialog({
             </div>
             <div className="space-y-1">
               <Label>{t('common.barcode')}</Label>
-              <Input {...register('barcode')} placeholder="123456789" />
+              <div className="flex gap-2">
+                <Input {...register('barcode')} placeholder="123456789" />
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  title={t('products.scanBarcode')}
+                  onClick={() => setCameraActive((v) => !v)}
+                >
+                  {cameraActive ? <CameraOff className="h-4 w-4" /> : <Camera className="h-4 w-4" />}
+                </Button>
+              </div>
             </div>
           </div>
+          {cameraActive && (
+            <video
+              ref={videoRef}
+              className="w-full rounded-lg border border-gray-300"
+            />
+          )}
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" {...register('is_active')} className="rounded" />
             <span className="text-sm">{t('common.active')}</span>
