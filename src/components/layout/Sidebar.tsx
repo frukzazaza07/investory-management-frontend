@@ -8,16 +8,18 @@ import {
   FileText,
   Webhook,
   Store,
+  Ruler,
   LogOut,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useLogout, useMe } from '@/hooks/useAuth'
+import { useLogout, useMe, useIsAdmin } from '@/hooks/useAuth'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 export function Sidebar() {
   const { t } = useTranslation()
   const logout = useLogout()
   const { data: me } = useMe()
+  const isAdmin = useIsAdmin()
 
   const navItems = [
     { to: '/dashboard', icon: LayoutDashboard, label: t('sidebar.dashboard') },
@@ -27,6 +29,7 @@ export function Sidebar() {
     { to: '/purchase-orders', icon: FileText, label: t('sidebar.purchaseOrders') },
     { to: '/webhooks', icon: Webhook, label: t('sidebar.webhooks') },
     { to: '/pos', icon: Store, label: t('sidebar.posTerminal') },
+    ...(isAdmin ? [{ to: '/units', icon: Ruler, label: t('sidebar.manageUnits') }] : []),
   ]
 
   return (

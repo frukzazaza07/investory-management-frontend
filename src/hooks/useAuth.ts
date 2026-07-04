@@ -32,10 +32,19 @@ export function useMe() {
   return useQuery({
     queryKey: ['me'],
     queryFn: async () => {
-      const { data } = await api.get<ApiResponse<{ user_id: number; email: string }>>('/api/me')
-      return data
+      const { data } = await api.get<
+        ApiResponse<{ user_id: number; email: string; role: 'admin' | 'staff' }>
+      >('/api/me')
+      return data.data!
     },
   })
+}
+
+// Gate admin-only UI (e.g. the unit management screen) on this.
+// The API also enforces it server-side — this is UX only, not a security boundary.
+export function useIsAdmin() {
+  const { data } = useMe()
+  return data?.role === 'admin'
 }
 
 export function useLogout() {

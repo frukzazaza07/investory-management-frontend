@@ -1,11 +1,58 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
-import type { ApiResponse, Paginated, InventoryItem, StockTransaction } from '@/types'
+import type { ApiResponse, Paginated, InventoryItem, InventoryUnit, StockTransaction } from '@/types'
 
 const KEYS = {
   list: (page: number, search: string) => ['inventory', page, search],
   detail: (id: string) => ['inventory', id],
   transactions: (id: string, page: number) => ['inventory', id, 'transactions', page],
+  units: ['inventory', 'units'],
+}
+
+// Units for the item form's <select> — GET /api/v1/inventory/units.
+// Admin-managed but changes rarely, so cache it for a few minutes.
+export function useInventoryUnits() {
+  return useQuery({
+    queryKey: KEYS.units,
+    queryFn: async () => {
+      const { data } = await api.get<ApiResponse<InventoryUnit[]>>('/api/v1/inventory/units')
+      return data.data!
+    },
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+export type InventoryUnitBody = {
+  code: string
+  name: string
+}
+
+// Admin-only — server returns 403 for non-admins (see useIsAdmin in useAuth.ts).
+export function useCreateInventoryUnit() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (body: InventoryUnitBody) =>
+      api.post<ApiResponse<InventoryUnit>>('/api/v1/inventory/units', body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: KEYS.units }),
+  })
+}
+
+export function useUpdateInventoryUnit(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (body: InventoryUnitBody) =>
+      api.put<ApiResponse<InventoryUnit>>(`/api/v1/inventory/units/${id}`, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: KEYS.units }),
+  })
+}
+
+// Fails with 400 if the unit is still referenced by an inventory item.
+export function useDeleteInventoryUnit() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/api/v1/inventory/units/${id}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: KEYS.units }),
+  })
 }
 
 export function useInventoryItems(page = 1, search = '', limit = 20) {

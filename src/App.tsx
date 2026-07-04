@@ -13,6 +13,7 @@ import PurchaseOrdersPage from '@/pages/purchase-orders/PurchaseOrdersPage'
 import PurchaseOrderDetailPage from '@/pages/purchase-orders/PurchaseOrderDetailPage'
 import WebhooksPage from '@/pages/webhooks/WebhooksPage'
 import PosPage from '@/pages/pos/PosPage'
+import UnitsPage from '@/pages/units/UnitsPage'
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
             <Route path="/suppliers" element={<SuppliersPage />} />
             <Route path="/inventory" element={<InventoryPage />} />
             <Route path="/inventory/:id" element={<InventoryItemDetailPage />} />
+            <Route path="/units" element={<UnitsPage />} />
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/products/:id" element={<ProductDetailPage />} />
             <Route path="/purchase-orders" element={<PurchaseOrdersPage />} />

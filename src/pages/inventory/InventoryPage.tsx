@@ -30,12 +30,14 @@ import { Pagination } from '@/components/Pagination'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import {
   useInventoryItems,
+  useInventoryUnits,
   useCreateInventoryItem,
   useUpdateInventoryItem,
   useDeleteInventoryItem,
   useAdjustStock,
   type InventoryBody,
 } from '@/hooks/useInventory'
+import { Select } from '@/components/ui/select'
 import { getApiError } from '@/lib/apiError'
 import { formatCurrency } from '@/lib/utils'
 import type { InventoryItem } from '@/types'
@@ -67,6 +69,7 @@ function ItemDialog({
   const { t } = useTranslation()
   const create = useCreateInventoryItem()
   const update = useUpdateInventoryItem(item?.id ?? '')
+  const { data: units, isLoading: unitsLoading } = useInventoryUnits()
   const isPending = create.isPending || update.isPending
 
   const itemSchema = useMemo(
@@ -104,7 +107,7 @@ function ItemDialog({
   }, [open, item, reset])
 
   const onSubmit = async (values: ItemForm) => {
-    const body: InventoryBody = { sku: values.sku, name: values.name, unit: values.unit, ...values }
+    const body: InventoryBody = values
     try {
       if (item) {
         await update.mutateAsync(body)
@@ -134,7 +137,15 @@ function ItemDialog({
             </div>
             <div className="space-y-1">
               <Label>{t('common.unit')} *</Label>
-              <Input {...register('unit')} placeholder={t('inventory.unitPlaceholder')} />
+              <Select {...register('unit')} disabled={unitsLoading}>
+                <option value="" disabled>{t('inventory.unitPlaceholder')}</option>
+                {item?.unit && !units?.some((u) => u.code === item.unit) && (
+                  <option value={item.unit}>{item.unit}</option>
+                )}
+                {units?.map((u) => (
+                  <option key={u.id} value={u.code}>{u.name} ({u.code})</option>
+                ))}
+              </Select>
               {errors.unit && <p className="text-xs text-red-500">{errors.unit.message}</p>}
             </div>
           </div>

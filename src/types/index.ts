@@ -22,12 +22,22 @@ export type Supplier = {
   updated_at: string
 }
 
+// Units are admin-managed (CRUD via /api/v1/inventory/units), not a fixed
+// union — fetch the current list with useInventoryUnits() rather than hardcoding it.
+export type InventoryUnit = {
+  id: string
+  code: string
+  name: string
+  created_at: string
+  updated_at: string
+}
+
 export type InventoryItem = {
   id: string
   sku: string
   name: string
   description: string
-  unit: string
+  unit: string // an InventoryUnit.code
   quantity_in_stock: number
   min_quantity: number
   cost_per_unit: number

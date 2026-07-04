@@ -49,6 +49,7 @@ const en = {
     nameRequired: 'Name is required',
     skuRequired: 'SKU is required',
     unitRequired: 'Unit is required',
+    codeRequired: 'Code is required',
     supplierRequired: 'Supplier is required',
     itemRequired: 'Item required',
     orderIdRequired: 'Order ID required',
@@ -71,6 +72,7 @@ const en = {
     purchaseOrders: 'Purchase Orders',
     webhooks: 'Webhooks',
     posTerminal: 'POS Terminal',
+    manageUnits: 'Manage Units',
     logout: 'Logout',
   },
   auth: {
@@ -140,7 +142,7 @@ const en = {
     itemCreated: 'Item created',
     itemDeleted: 'Item deleted',
     deleteConfirm: 'Delete "{{name}}"?',
-    unitPlaceholder: 'kg, pcs, L…',
+    unitPlaceholder: 'Select unit',
     itemNamePlaceholder: 'Item name',
   },
   inventoryDetail: {
@@ -278,6 +280,21 @@ const en = {
   },
   pagination: {
     info: 'Page {{page}} of {{totalPages}} — {{total}} total',
+  },
+  units: {
+    title: 'Units',
+    addUnit: 'Add Unit',
+    notFound: 'No units found',
+    editTitle: 'Edit Unit',
+    newTitle: 'New Unit',
+    code: 'Code',
+    codePlaceholder: 'kg',
+    namePlaceholder: 'Kilogram',
+    updated: 'Unit updated',
+    createdToast: 'Unit created',
+    deleted: 'Unit deleted',
+    deleteConfirm: 'Delete unit "{{name}}"?',
+    adminOnly: 'Admins only.',
   },
 } as const
 

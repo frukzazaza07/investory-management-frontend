@@ -49,6 +49,7 @@ const th = {
     nameRequired: 'กรุณาระบุชื่อ',
     skuRequired: 'กรุณาระบุรหัสสินค้า',
     unitRequired: 'กรุณาระบุหน่วย',
+    codeRequired: 'กรุณาระบุรหัส',
     supplierRequired: 'กรุณาเลือกซัพพลายเออร์',
     itemRequired: 'กรุณาระบุรายการ',
     orderIdRequired: 'กรุณาระบุรหัสคำสั่งซื้อ',
@@ -71,6 +72,7 @@ const th = {
     purchaseOrders: 'ใบสั่งซื้อ',
     webhooks: 'เว็บฮุก',
     posTerminal: 'เครื่อง POS',
+    manageUnits: 'จัดการหน่วย',
     logout: 'ออกจากระบบ',
   },
   auth: {
@@ -140,7 +142,7 @@ const th = {
     itemCreated: 'สร้างรายการแล้ว',
     itemDeleted: 'ลบรายการแล้ว',
     deleteConfirm: 'ลบ "{{name}}" ใช่หรือไม่?',
-    unitPlaceholder: 'กก., ชิ้น, ล.',
+    unitPlaceholder: 'เลือกหน่วย',
     itemNamePlaceholder: 'ชื่อรายการ',
   },
   inventoryDetail: {
@@ -278,6 +280,21 @@ const th = {
   },
   pagination: {
     info: 'หน้า {{page}} จาก {{totalPages}} — รวม {{total}} รายการ',
+  },
+  units: {
+    title: 'หน่วย',
+    addUnit: 'เพิ่มหน่วย',
+    notFound: 'ไม่พบหน่วย',
+    editTitle: 'แก้ไขหน่วย',
+    newTitle: 'เพิ่มหน่วยใหม่',
+    code: 'รหัส',
+    codePlaceholder: 'kg',
+    namePlaceholder: 'กิโลกรัม',
+    updated: 'อัปเดตหน่วยแล้ว',
+    createdToast: 'สร้างหน่วยแล้ว',
+    deleted: 'ลบหน่วยแล้ว',
+    deleteConfirm: 'ลบหน่วย "{{name}}" ใช่หรือไม่?',
+    adminOnly: 'สำหรับผู้ดูแลระบบเท่านั้น',
   },
 } as const
 
