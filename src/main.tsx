@@ -5,6 +5,7 @@ import { Toaster } from 'sonner'
 import './index.css'
 import './i18n'
 import App from './App'
+import { ErrorBoundary } from './components/ErrorBoundary'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, retry: 1 } },
@@ -12,9 +13,11 @@ const queryClient = new QueryClient({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <App />
-      <Toaster richColors position="top-right" />
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <App />
+        <Toaster richColors position="top-right" />
+      </QueryClientProvider>
+    </ErrorBoundary>
   </StrictMode>,
 )

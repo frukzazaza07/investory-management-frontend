@@ -7,7 +7,10 @@ export function useWebhooks() {
     queryKey: ['webhooks'],
     queryFn: async () => {
       const { data } = await api.get<ApiResponse<Webhook[]>>('/api/v1/webhooks')
-      return data.data!
+      return (data.data ?? []).map((w) => ({
+        ...w,
+        events: Array.isArray(w.events) ? w.events : [],
+      }))
     },
   })
 }
@@ -17,7 +20,8 @@ export function useWebhook(id: string) {
     queryKey: ['webhooks', id],
     queryFn: async () => {
       const { data } = await api.get<ApiResponse<Webhook>>(`/api/v1/webhooks/${id}`)
-      return data.data!
+      const webhook = data.data!
+      return { ...webhook, events: Array.isArray(webhook.events) ? webhook.events : [] }
     },
     enabled: !!id,
   })

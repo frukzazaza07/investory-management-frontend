@@ -1,0 +1,7 @@
+1. Check route /webhooks after api response succes then page is white
+   - Status: Fixed (pending manual verification against live backend)
+   - Root cause: `useWebhooks`/`useWebhook` in [src/hooks/useWebhooks.ts](src/hooks/useWebhooks.ts) trusted the API response's `events` field to always be an array. When a webhook record had `events` as `null`/non-array, `w.events.map(...)` in [src/pages/webhooks/WebhooksPage.tsx:325](src/pages/webhooks/WebhooksPage.tsx#L325) threw a render error. The app had no ErrorBoundary anywhere, so the uncaught error unmounted the entire React tree, producing a blank white page.
+   - Fix:
+     - Normalized `events` to always be an array in `useWebhooks`/`useWebhook` ([src/hooks/useWebhooks.ts](src/hooks/useWebhooks.ts)).
+     - Added a top-level `ErrorBoundary` ([src/components/ErrorBoundary.tsx](src/components/ErrorBoundary.tsx)) wrapping `<App />` in [src/main.tsx](src/main.tsx) so future unhandled render errors show a fallback UI instead of a blank screen.
+   - Verified: `npx tsc --noEmit` passes clean. Could not exercise `/webhooks` end-to-end against the live API because the backend on `http://localhost:8080` was not running during this session — please re-test manually against real data once the backend is up.
