@@ -95,7 +95,7 @@ function SupplierDialog({
   }, [open, supplier, reset])
 
   const onSubmit = async (values: Form) => {
-    const body: SupplierBody = { name: values.name, ...values }
+    const body: SupplierBody = { ...values }
     try {
       if (supplier) {
         await updateSupplier.mutateAsync(body)

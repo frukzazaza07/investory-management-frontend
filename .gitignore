@@ -6,6 +6,7 @@ dist/
 *.tsbuildinfo
 
 # Environment — contains secrets
+.env
 .env.local
 .env*.local
 
